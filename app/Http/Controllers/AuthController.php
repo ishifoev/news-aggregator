@@ -6,6 +6,7 @@ use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Contracts\AuthServiceInterface;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -134,5 +135,10 @@ class AuthController extends Controller
     {
         $token = $this->authService->login($request->validated());
         return response()->json(['access_token' => $token, 'token_type' => 'Bearer'], Response::HTTP_OK);
+    }
+
+    public function logout(): JsonResponse {
+        $this->authService->logout();
+        return response()->json(['message' => 'Successfully logged out'], Response::HTTP_OK);
     }
 }

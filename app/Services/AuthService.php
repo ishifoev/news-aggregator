@@ -24,8 +24,7 @@ class AuthService implements AuthServiceInterface {
         $this->userRepository = $userRepository;
     }
 
-    public function login(array $credentials): mixed
-    {
+    public function login(array $credentials): string {
         Log::info('Login attempt', ['email' => $credentials['email']]);
 
         if (!Auth::attempt($credentials)) {
@@ -42,8 +41,7 @@ class AuthService implements AuthServiceInterface {
         return $user->createToken('auth_token')->plainTextToken;
     }
 
-    public function register(array $data): mixed
-    {
+    public function register(array $data): string {
         Log::info('Registration attempt', ['email' => $data['email']]);
         $user = $this->userRepository->create($data);
 
@@ -51,4 +49,22 @@ class AuthService implements AuthServiceInterface {
 
         return $user->createToken('auth_token')->plainTextToken;
     }
+
+    /**
+     * @return void
+     */
+    public function logout(): void
+    {
+        $user = auth()->user();
+
+        if ($user) {
+            Log::info('Logout attempt', ['user_id' => $user["id"], 'email' => $user["email"]]);
+            $user->tokens()->delete();
+            Log::info('Logout successful', ['user_id' => $user["id"]]);
+        } else {
+            Log::warning('Logout attempt failed: no authenticated user');
+        }
+    }
+
+
 }

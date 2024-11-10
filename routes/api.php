@@ -20,8 +20,8 @@ Route::prefix('v1')->group(function () {
     Route::middleware(['throttle:register'])->post('/register', [AuthController::class, 'register']);
     Route::middleware(['throttle:login'])->post('/login', [AuthController::class, 'login']);
     Route::middleware(['verify.health.token', 'throttle:health'])->get('/health', [HealthCheckController::class, 'status']);
-});
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+    Route::middleware(['auth:sanctum'])->group(function () {
+        Route::post('/logout', [AuthController::class, 'logout']);
+    });
 });
