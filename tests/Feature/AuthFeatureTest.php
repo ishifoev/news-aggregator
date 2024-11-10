@@ -2,8 +2,9 @@
 
 namespace Tests\Feature;
 
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
+use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
 
 class AuthFeatureTest extends TestCase
@@ -19,7 +20,7 @@ class AuthFeatureTest extends TestCase
             'password_confirmation' => 'password',
         ]);
 
-        $response->assertStatus(201)
+        $response->assertStatus(Response::HTTP_CREATED)
             ->assertJsonStructure(['access_token', 'token_type']);
         $this->assertDatabaseHas('users', ['email' => 'john@example.com']);
     }
@@ -33,7 +34,33 @@ class AuthFeatureTest extends TestCase
             'password_confirmation' => 'notmatching',
         ]);
 
-        $response->assertStatus(422)
+        $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY)
             ->assertJsonValidationErrors(['name', 'email', 'password']);
+    }
+    public function test_user_can_login()
+    {
+        User::factory()->create([
+            'email' => 'john@example.com',
+            'password' => bcrypt('password'),
+        ]);
+
+        $response = $this->postJson('/api/v1/login', [
+            'email' => 'john@example.com',
+            'password' => 'password',
+        ]);
+
+        $response->assertStatus(Response::HTTP_OK)
+            ->assertJsonStructure(['access_token', 'token_type']);
+    }
+
+    public function test_user_cannot_login_with_invalid_credentials()
+    {
+        $response = $this->postJson('/api/v1/login', [
+            'email' => 'invalid@example.com',
+            'password' => 'invalidpassword',
+        ]);
+
+        $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY)
+            ->assertJson(['message' => 'Invalid login details']);
     }
 }

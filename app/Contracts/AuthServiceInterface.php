@@ -10,4 +10,6 @@ interface AuthServiceInterface
      */
     public function register(array $data): mixed;
 
+    public function login(array $credentials);
+
 }

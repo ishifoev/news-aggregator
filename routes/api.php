@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
     Route::middleware(['throttle:register'])->post('/register', [AuthController::class, 'register']);
+    Route::middleware(['throttle:login'])->post('/login', [AuthController::class, 'login']);
     Route::middleware(['verify.health.token', 'throttle:health'])->get('/health', [HealthCheckController::class, 'status']);
 });
 
