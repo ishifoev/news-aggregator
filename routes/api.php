@@ -21,6 +21,8 @@ Route::prefix('v1')->group(function () {
     Route::middleware(['throttle:login'])->post('/login', [AuthController::class, 'login']);
     Route::middleware(['verify.health.token', 'throttle:health'])->get('/health', [HealthCheckController::class, 'status']);
 
+    Route::post('/password-reset', [AuthController::class, 'passwordReset']);
+
     Route::middleware(['auth:sanctum'])->group(function () {
         Route::post('/logout', [AuthController::class, 'logout']);
     });

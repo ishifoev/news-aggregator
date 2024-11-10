@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\LoginRequest;
+use App\Http\Requests\PasswordResetRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Contracts\AuthServiceInterface;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -140,5 +142,30 @@ class AuthController extends Controller
     public function logout(): JsonResponse {
         $this->authService->logout();
         return response()->json(['message' => 'Successfully logged out'], Response::HTTP_OK);
+    }
+
+
+    /**
+     * @OA\Post(
+     *     path="/api/v1/password-reset",
+     *     tags={"Auth"},
+     *     summary="Request a password reset link",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"email"},
+     *             @OA\Property(property="email", type="string", format="email"),
+     *         )
+     *     ),
+     *     @OA\Response(response=200, description="Password reset link sent")
+     * )
+     */
+    public function passwordReset(PasswordResetRequest $request): JsonResponse {
+        try {
+            $this->authService->sendPasswordResetLink($request->validated()['email']);
+            return response()->json(['message' => 'Password reset link sent']);
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 }

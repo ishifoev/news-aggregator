@@ -4,6 +4,7 @@ namespace Tests\Unit;
 
 use App\Contracts\UserRepositoryInterface;
 use App\Events\UserRegistered;
+use Illuminate\Support\Facades\Password;
 use Tests\TestCase;
 use App\Services\AuthService;
 use App\Repositories\UserRepository;
@@ -114,5 +115,54 @@ class AuthServiceTest extends TestCase
         Event::assertDispatched(UserRegistered::class, function ($event) use ($mockUser) {
             return $event->user === $mockUser;
         });
+    }
+
+    public function test_logout_logs_out_user_and_deletes_tokens()
+    {
+        $mockUser = Mockery::mock();
+        $mockUser->shouldReceive('tokens->delete')->once();
+        $mockUser->email = 'user@example.com';
+        $mockUser->id = 1;
+
+        // Simulate authenticated user
+        Auth::shouldReceive('user')->andReturn($mockUser);
+
+        Log::shouldReceive('info')->twice();
+
+        $this->authService->logout();
+
+        $this->assertTrue(true);
+    }
+
+    public function test_logout_logs_warning_when_no_authenticated_user()
+    {
+        Auth::shouldReceive('user')->andReturn(null);
+
+        Log::shouldReceive('warning')->once()->with('Logout attempt failed: no authenticated user');
+
+        $this->authService->logout();
+
+        $this->assertTrue(true);
+    }
+
+    public function test_send_password_reset_link_logs_and_sends_email()
+    {
+        Log::shouldReceive('info')->once()->with('Password reset link requested', ['email' => 'john@example.com']);
+        Password::shouldReceive('sendResetLink')->once()->with(['email' => 'john@example.com'])->andReturn(Password::RESET_LINK_SENT);
+
+        $this->authService->sendPasswordResetLink('john@example.com');
+
+        $this->assertTrue(true);
+    }
+
+    public function test_send_password_reset_link_handles_exceptions()
+    {
+        Log::shouldReceive('info')->once()->with('Password reset link requested', ['email' => 'john@example.com']);
+        Password::shouldReceive('sendResetLink')->once()->with(['email' => 'john@example.com'])->andThrow(new \Exception('An error occurred'));
+
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('An error occurred');
+
+        $this->authService->sendPasswordResetLink('john@example.com');
     }
 }

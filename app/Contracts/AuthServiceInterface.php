@@ -16,4 +16,5 @@ interface AuthServiceInterface
 
     public function logout(): void;
 
+    public function sendPasswordResetLink(string $email);
 }

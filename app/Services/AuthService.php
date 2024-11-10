@@ -9,6 +9,7 @@ use App\Repositories\UserRepository;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Password;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -58,13 +59,17 @@ class AuthService implements AuthServiceInterface {
         $user = auth()->user();
 
         if ($user) {
-            Log::info('Logout attempt', ['user_id' => $user["id"], 'email' => $user["email"]]);
+            Log::info('Logout attempt', ['user_id' => $user->id, 'email' => $user->email]);
             $user->tokens()->delete();
-            Log::info('Logout successful', ['user_id' => $user["id"]]);
+            Log::info('Logout successful', ['user_id' => $user->id]);
         } else {
             Log::warning('Logout attempt failed: no authenticated user');
         }
     }
 
+    public function sendPasswordResetLink(string $email): void {
+        Log::info('Password reset link requested', ['email' => $email]);
+        Password::sendResetLink(['email' => $email]);
+    }
 
 }
