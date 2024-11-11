@@ -4,20 +4,20 @@ namespace Tests\Unit;
 
 use App\Contracts\UserRepositoryInterface;
 use App\Events\UserRegistered;
-use Illuminate\Support\Facades\Password;
-use Tests\TestCase;
-use App\Services\AuthService;
-use App\Repositories\UserRepository;
 use App\Models\User;
+use App\Services\AuthService;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Password;
 use Illuminate\Validation\ValidationException;
 use Mockery;
-use Illuminate\Support\Facades\Event;
+use Tests\TestCase;
 
 class AuthServiceTest extends TestCase
 {
     protected AuthService $authService;
+
     protected UserRepositoryInterface $userRepository;
 
     protected function setUp(): void

@@ -3,7 +3,6 @@
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HealthCheckController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*

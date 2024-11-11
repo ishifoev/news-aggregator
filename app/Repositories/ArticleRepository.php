@@ -11,10 +11,10 @@ class ArticleRepository implements ArticleRepositoryInterface
     public function getArticles(array $filters): LengthAwarePaginator
     {
         return Article::with('source') // Eager loading 'source' for optimized queries
-        ->when(isset($filters['keyword']), function ($query) use ($filters) {
-            $query->where('title', 'like', '%' . $filters['keyword'] . '%')
-                ->orWhere('content', 'like', '%' . $filters['keyword'] . '%');
-        })
+            ->when(isset($filters['keyword']), function ($query) use ($filters) {
+                $query->where('title', 'like', '%'.$filters['keyword'].'%')
+                    ->orWhere('content', 'like', '%'.$filters['keyword'].'%');
+            })
             ->when(isset($filters['date']), function ($query) use ($filters) {
                 $query->whereDate('published_at', $filters['date']);
             })
@@ -29,7 +29,6 @@ class ArticleRepository implements ArticleRepositoryInterface
             ->orderBy('published_at', 'desc')
             ->paginate(10);
     }
-
 
     public function findArticleById(int $id): Article
     {

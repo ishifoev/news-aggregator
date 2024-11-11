@@ -12,9 +12,9 @@ use App\Repositories\UserRepository;
 use App\Services\ArticleService;
 use App\Services\AuthService;
 use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Http\Request;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -34,22 +34,22 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        RateLimiter::for('register', function(Request $request) {
+        RateLimiter::for('register', function (Request $request) {
             return Limit::perMinutes(5, 20)->by($request->ip())->response(function () use ($request) {
-                    return RateLimitHelper::rateLimitResponse($request);
+                return RateLimitHelper::rateLimitResponse($request);
             });
         });
 
-        RateLimiter::for('login', function(Request $request) {
+        RateLimiter::for('login', function (Request $request) {
             return Limit::perMinute(5)->by($request->ip())->response(function () use ($request) {
                 return RateLimitHelper::rateLimitResponse($request);
             });
         });
 
-        RateLimiter::for('health', function(Request $request) {
+        RateLimiter::for('health', function (Request $request) {
             return Limit::perMinute(5)->by($request->ip())->response(function () use ($request) {
-                    return RateLimitHelper::rateLimitResponse($request);
-                });
+                return RateLimitHelper::rateLimitResponse($request);
+            });
         });
         RateLimiter::for('password-reset', function (Request $request) {
             return Limit::perMinute(5)->by($request->ip())->response(function () use ($request) {
@@ -58,8 +58,8 @@ class AppServiceProvider extends ServiceProvider
         });
         RateLimiter::for('articles', function (Request $request) {
             return Limit::perMinute(10)->by($request->ip())->response(function () use ($request) {
-                    return RateLimitHelper::rateLimitResponse($request);
-                });
+                return RateLimitHelper::rateLimitResponse($request);
+            });
         });
     }
 }

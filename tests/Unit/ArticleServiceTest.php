@@ -2,15 +2,16 @@
 
 namespace Tests\Unit;
 
-use Tests\TestCase;
-use App\Services\ArticleService;
 use App\Contracts\ArticleRepositoryInterface;
 use App\Models\Article;
+use App\Services\ArticleService;
 use Mockery;
+use Tests\TestCase;
 
 class ArticleServiceTest extends TestCase
 {
     protected ArticleService $articleService;
+
     protected $articleRepositoryMock;
 
     protected function setUp(): void

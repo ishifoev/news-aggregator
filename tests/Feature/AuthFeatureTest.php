@@ -4,9 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Notifications\AnonymousNotifiable;
 use Illuminate\Support\Facades\Notification;
-use Illuminate\Support\Facades\Password;
 use Laravel\Sanctum\Sanctum;
 use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
@@ -41,6 +39,7 @@ class AuthFeatureTest extends TestCase
         $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY)
             ->assertJsonValidationErrors(['name', 'email', 'password']);
     }
+
     public function test_user_can_login()
     {
         User::factory()->create([
@@ -67,6 +66,7 @@ class AuthFeatureTest extends TestCase
         $response->assertStatus(Response::HTTP_UNAUTHORIZED)
             ->assertJson(['message' => 'Invalid login details']);
     }
+
     public function test_user_can_logout_successfully()
     {
         $user = User::factory()->create();
@@ -106,7 +106,7 @@ class AuthFeatureTest extends TestCase
         ]);
 
         $response->assertStatus(422)
-            ->assertJson(['message' => "We could not find a user with that email address."]);
+            ->assertJson(['message' => 'We could not find a user with that email address.']);
     }
 
     public function test_rate_limit_exceeded_on_login()
@@ -135,6 +135,7 @@ class AuthFeatureTest extends TestCase
             ])
             ->assertJsonStructure(['retry_after']);
     }
+
     public function test_rate_limit_exceeded_on_register()
     {
         for ($i = 0; $i <= 20; $i++) {
@@ -159,6 +160,4 @@ class AuthFeatureTest extends TestCase
             ])
             ->assertJsonStructure(['retry_after']);
     }
-
-
 }
