@@ -31,6 +31,11 @@ class AuthController extends Controller
     }
 
     /**
+     * Registers a new user and returns an access token.
+     *
+     * @param RegisterRequest $request The HTTP request containing registration data.
+     * @return JsonResponse The response containing the access token and token type.
+     *
      * @OA\Post(
      *     path="/api/v1/register",
      *     tags={"Auth"},
@@ -88,6 +93,11 @@ class AuthController extends Controller
     }
 
     /**
+     * Logs in a user and returns an access token.
+     *
+     * @param LoginRequest $request The HTTP request containing login credentials.
+     * @return JsonResponse The response containing the access token and token type.
+     *
      * @OA\Post(
      *     path="/api/v1/login",
      *     tags={"Auth"},
@@ -143,6 +153,11 @@ class AuthController extends Controller
         }
     }
 
+    /**
+     * Logs out the currently authenticated user.
+     *
+     * @return JsonResponse The response indicating the logout status.
+     */
     public function logout(): JsonResponse {
         $this->authService->logout();
         return response()->json(['message' => 'Successfully logged out'], Response::HTTP_OK);
@@ -150,6 +165,11 @@ class AuthController extends Controller
 
 
     /**
+     *  Sends a password reset link to the user's email.
+     *
+     * @param PasswordResetRequest $request The HTTP request containing the email.
+     * @return JsonResponse The response indicating whether the password reset link was sent.
+     *
      * @OA\Post(
      *     path="/api/v1/password-reset",
      *     tags={"Auth"},
