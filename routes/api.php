@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HealthCheckController;
 use Illuminate\Http\Request;
@@ -23,6 +24,10 @@ Route::prefix('v1')->group(function () {
 
     Route::post('/password-reset', [AuthController::class, 'passwordReset']);
 
+    Route::middleware(['throttle:articles'])->group(function () {
+        Route::get('/articles', [ArticleController::class, 'index']);
+        Route::get('/articles/{id}', [ArticleController::class, 'show']);
+    });
     Route::middleware(['auth:sanctum'])->group(function () {
         Route::post('/logout', [AuthController::class, 'logout']);
     });

@@ -11,16 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('articles', function (Blueprint $table) {
+        Schema::create('sources', function (Blueprint $table) {
             $table->id();
-            $table->string('title');
-            $table->text('content');
-            $table->string('author')->nullable();
-            $table->string('source')->nullable();
-            $table->string('category')->nullable();
-            $table->timestamp('published_at')->nullable();
+            $table->string('name')->unique();
+            $table->string('api_url')->nullable(); // API URL for fetching articles
+            $table->string('api_key')->nullable(); // API key if required
+            $table->json('metadata')->nullable(); // Any additional data in JSON format
             $table->timestamps();
         });
+
     }
 
     /**
@@ -28,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('articles');
+        Schema::dropIfExists('sources');
     }
 };

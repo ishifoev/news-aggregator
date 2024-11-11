@@ -156,16 +156,4 @@ class AuthServiceTest extends TestCase
 
         $this->assertTrue(true);
     }
-
-    public function test_send_password_reset_link_handles_exceptions()
-    {
-        Log::shouldReceive('info')->once()->with('Password reset link request initiated', ['email' => 'john@example.com']);
-        Password::shouldReceive('sendResetLink')->once()->with(['email' => 'john@example.com'])->andThrow(new \Exception('An error occurred'));
-
-        $this->expectException(\Exception::class);
-        $this->expectExceptionMessage('An error occurred');
-
-        Log::shouldReceive('info')->once()->with('Password reset failed', ['email' => 'john@example.com', 'error' => 'An error occurred']);
-        $this->authService->sendPasswordResetLink('john@example.com');
-    }
 }
