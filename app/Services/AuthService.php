@@ -78,8 +78,14 @@ class AuthService implements AuthServiceInterface {
     }
 
     public function sendPasswordResetLink(string $email): void {
-        Log::info('Password reset link requested', ['email' => $email]);
-        Password::sendResetLink(['email' => $email]);
+        Log::info('Password reset link request initiated', ['email' => $email]);
+        try {
+            Password::sendResetLink(['email' => $email]);
+            Log::info('Password reset link sent successfully', ['email' => $email]);
+        } catch (\Exception $e) {
+            Log::error('Password reset failed', ['email' => $email, 'error' => $e->getMessage()]);
+            throw $e;
+        }
     }
 
 }
