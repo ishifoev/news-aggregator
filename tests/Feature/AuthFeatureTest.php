@@ -108,4 +108,57 @@ class AuthFeatureTest extends TestCase
         $response->assertStatus(422)
             ->assertJson(['message' => "We could not find a user with that email address."]);
     }
+
+    public function test_rate_limit_exceeded_on_login()
+    {
+        User::factory()->create([
+            'email' => 'test@example.com',
+            'password' => bcrypt('password123'),
+        ]);
+
+        // Simulate reaching the rate limit
+        for ($i = 0; $i < 6; $i++) {
+            $this->postJson('/api/v1/login', [
+                'email' => 'test@example.com',
+                'password' => 'password123',
+            ]);
+        }
+
+        $response = $this->postJson('/api/v1/login', [
+            'email' => 'test@example.com',
+            'password' => 'password123',
+        ]);
+
+        $response->assertStatus(Response::HTTP_TOO_MANY_REQUESTS)
+            ->assertJson([
+                'message' => 'Too many requests. Please wait before trying again.',
+            ])
+            ->assertJsonStructure(['retry_after']);
+    }
+    public function test_rate_limit_exceeded_on_register()
+    {
+        for ($i = 0; $i <= 20; $i++) {
+            $this->postJson('/api/v1/register', [
+                'name' => 'John Doe',
+                'email' => 'test'.$i.'@example.com',
+                'password' => 'password123',
+                'password_confirmation' => 'password123',
+            ]);
+        }
+
+        $response = $this->postJson('/api/v1/register', [
+            'name' => 'John Doe',
+            'email' => 'test6@example.com',
+            'password' => 'password123',
+            'password_confirmation' => 'password123',
+        ]);
+
+        $response->assertStatus(Response::HTTP_TOO_MANY_REQUESTS)
+            ->assertJson([
+                'message' => 'Too many requests. Please wait before trying again.',
+            ])
+            ->assertJsonStructure(['retry_after']);
+    }
+
+
 }
