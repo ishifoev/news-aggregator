@@ -150,14 +150,35 @@ class AuthController extends Controller
      *     path="/api/v1/password-reset",
      *     tags={"Auth"},
      *     summary="Request a password reset link",
+     *     description="Sends a password reset link to the user's registered email address.",
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
      *             required={"email"},
-     *             @OA\Property(property="email", type="string", format="email"),
+     *             @OA\Property(property="email", type="string", format="email", example="user@example.com")
      *         )
      *     ),
-     *     @OA\Response(response=200, description="Password reset link sent")
+     *     @OA\Response(
+     *         response=200,
+     *         description="Password reset link sent successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Password reset link sent")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=429,
+     *         description="Too many requests",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Too many requests. Please wait before trying again.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Internal server error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="An error occurred while processing the request.")
+     *         )
+     *     )
      * )
      */
     public function passwordReset(PasswordResetRequest $request): JsonResponse {
