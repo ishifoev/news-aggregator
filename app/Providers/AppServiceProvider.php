@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Contracts\AuthServiceInterface;
 use App\Contracts\UserRepositoryInterface;
+use App\Helpers\RateLimitHelper;
 use App\Repositories\UserRepository;
 use App\Services\AuthService;
 use Illuminate\Cache\RateLimiting\Limit;
@@ -28,18 +29,26 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         RateLimiter::for('register', function(Request $request) {
-            return Limit::perMinutes(5, 20)->by($request->ip());
+            return Limit::perMinutes(5, 20)->by($request->ip())->response(function () use ($request) {
+                    return RateLimitHelper::rateLimitResponse($request);
+            });
         });
 
         RateLimiter::for('login', function(Request $request) {
-            return Limit::perMinute(5)->by($request->ip());
+            return Limit::perMinute(5)->by($request->ip())->response(function () use ($request) {
+                return RateLimitHelper::rateLimitResponse($request);
+            });
         });
 
         RateLimiter::for('health', function(Request $request) {
-            return Limit::perMinute(5)->by($request->ip());
+            return Limit::perMinute(5)->by($request->ip())->response(function () use ($request) {
+                    return RateLimitHelper::rateLimitResponse($request);
+                });
         });
         RateLimiter::for('password-reset', function (Request $request) {
-            return Limit::perMinute(5)->by($request->ip());
+            return Limit::perMinute(5)->by($request->ip())->response(function () use ($request) {
+                return RateLimitHelper::rateLimitResponse($request);
+            });
         });
     }
 }
