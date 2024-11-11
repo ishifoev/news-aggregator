@@ -39,6 +39,8 @@ class AuthService implements AuthServiceInterface {
             throw new \Exception('User not found after successful login attempt');
         }
 
+        Log::info('User logged in successfully', ['email' => $credentials['email']]);
+
         return $user->createToken('auth_token')->plainTextToken;
     }
 

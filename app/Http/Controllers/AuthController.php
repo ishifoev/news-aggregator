@@ -135,8 +135,12 @@ class AuthController extends Controller
      */
     public function login(LoginRequest $request): JsonResponse
     {
-        $token = $this->authService->login($request->validated());
-        return response()->json(['access_token' => $token, 'token_type' => 'Bearer'], Response::HTTP_OK);
+        try {
+            $token = $this->authService->login($request->validated());
+            return response()->json(['access_token' => $token, 'token_type' => 'Bearer'], Response::HTTP_OK);
+        }  catch (\Exception $e) {
+            return response()->json(['message' => 'Invalid login details'], Response::HTTP_UNAUTHORIZED);
+        }
     }
 
     public function logout(): JsonResponse {

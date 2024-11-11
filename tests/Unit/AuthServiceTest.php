@@ -61,6 +61,7 @@ class AuthServiceTest extends TestCase
             'password' => 'password',
         ];
 
+        Log::shouldReceive('info')->once()->with('User logged in successfully', ['email' => 'john@example.com']);
         $result = $this->authService->login($credentials);
 
         $this->assertEquals('dummy_token', $result);

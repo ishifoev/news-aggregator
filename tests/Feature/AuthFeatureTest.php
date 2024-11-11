@@ -64,7 +64,7 @@ class AuthFeatureTest extends TestCase
             'password' => 'invalidpassword',
         ]);
 
-        $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY)
+        $response->assertStatus(Response::HTTP_UNAUTHORIZED)
             ->assertJson(['message' => 'Invalid login details']);
     }
     public function test_user_can_logout_successfully()
