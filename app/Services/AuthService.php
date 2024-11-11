@@ -44,13 +44,21 @@ class AuthService implements AuthServiceInterface {
         return $user->createToken('auth_token')->plainTextToken;
     }
 
+    /**
+     * @throws \Exception
+     */
     public function register(array $data): string {
         Log::info('Registration attempt', ['email' => $data['email']]);
-        $user = $this->userRepository->create($data);
+        try {
+            $user = $this->userRepository->create($data);
 
-        event(new UserRegistered($user));
+            event(new UserRegistered($user));
 
-        return $user->createToken('auth_token')->plainTextToken;
+            return $user->createToken('auth_token')->plainTextToken;
+        }  catch (\Exception $e) {
+            Log::error('Registration failed', ['email' => $data['email'], 'error' => $e->getMessage()]);
+            throw $e;
+        }
     }
 
     /**
