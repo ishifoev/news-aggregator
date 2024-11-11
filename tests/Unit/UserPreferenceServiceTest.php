@@ -5,12 +5,13 @@ namespace Tests\Unit;
 use App\Contracts\UserPreferenceRepositoryInterface;
 use App\Models\UserPreference;
 use App\Services\UserPreferenceService;
-use Tests\TestCase;
 use Mockery;
+use Tests\TestCase;
 
 class UserPreferenceServiceTest extends TestCase
 {
     protected UserPreferenceRepositoryInterface $userPreferenceRepositoryMock;
+
     protected UserPreferenceService $userPreferenceService;
 
     protected function setUp(): void
@@ -26,7 +27,7 @@ class UserPreferenceServiceTest extends TestCase
         $preferences = [
             'preferred_sources' => ['TechCrunch'],
             'preferred_categories' => ['Technology'],
-            'preferred_authors' => ['John Doe']
+            'preferred_authors' => ['John Doe'],
         ];
         $userPreference = new UserPreference($preferences + ['user_id' => $userId]);
 
@@ -49,7 +50,7 @@ class UserPreferenceServiceTest extends TestCase
             'user_id' => $userId,
             'preferred_sources' => ['TechCrunch'],
             'preferred_categories' => ['Technology'],
-            'preferred_authors' => ['John Doe']
+            'preferred_authors' => ['John Doe'],
         ]);
 
         $this->userPreferenceRepositoryMock

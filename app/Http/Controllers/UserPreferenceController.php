@@ -20,14 +20,18 @@ class UserPreferenceController extends Controller
      *     path="/api/v1/user/preferences",
      *     tags={"User Preferences"},
      *     summary="Set user preferences",
+     *
      *     @OA\RequestBody(
      *         required=true,
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(property="preferred_sources", type="array", @OA\Items(type="string")),
      *             @OA\Property(property="preferred_categories", type="array", @OA\Items(type="string")),
      *             @OA\Property(property="preferred_authors", type="array", @OA\Items(type="string"))
      *         )
      *     ),
+     *
      *     @OA\Response(response=200, description="User preferences saved")
      * )
      */
@@ -45,6 +49,7 @@ class UserPreferenceController extends Controller
      *     path="/api/v1/user/preferences",
      *     tags={"User Preferences"},
      *     summary="Get user preferences",
+     *
      *     @OA\Response(response=200, description="User preferences retrieved")
      * )
      */

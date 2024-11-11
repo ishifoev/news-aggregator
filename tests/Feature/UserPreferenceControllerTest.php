@@ -6,8 +6,8 @@ use App\Models\User;
 use App\Models\UserPreference;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
-use Tests\TestCase;
 use Symfony\Component\HttpFoundation\Response;
+use Tests\TestCase;
 
 class UserPreferenceControllerTest extends TestCase
 {
@@ -18,14 +18,13 @@ class UserPreferenceControllerTest extends TestCase
         $user = User::factory()->create();
         Sanctum::actingAs($user);
 
-        UserPreference::factory()->create(['user_id' => $user->id]);
+        UserPreference::factory()->create(['user_id' => $user['id']]);
 
         $response = $this->getJson('/api/v1/user/preferences');
 
         $response->assertStatus(Response::HTTP_OK)
-            ->assertJsonStructure(['id', 'user_id', 'preferred_sources']);
+            ->assertJsonStructure(['user_id', 'preferred_sources']);
     }
-
 
     public function test_authenticated_user_can_get_preferences()
     {
@@ -36,13 +35,13 @@ class UserPreferenceControllerTest extends TestCase
             'user_id' => $user->id,
             'preferred_sources' => json_encode(['TechCrunch']),
             'preferred_categories' => json_encode(['Technology']),
-            'preferred_authors' => json_encode(['John Doe'])
+            'preferred_authors' => json_encode(['John Doe']),
         ]);
 
         $response = $this->getJson('/api/v1/user/preferences');
 
         $response->assertStatus(Response::HTTP_OK)
-            ->assertJsonStructure(['id', 'user_id', 'preferred_sources'])
+            ->assertJsonStructure(['user_id', 'preferred_sources'])
             ->assertJson(['user_id' => $user->id]);
     }
 

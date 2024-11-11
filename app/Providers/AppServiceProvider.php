@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Contracts\ArticleAggregationServiceInterface;
 use App\Contracts\ArticleRepositoryInterface;
 use App\Contracts\ArticleServiceInterface;
 use App\Contracts\AuthServiceInterface;
@@ -12,8 +13,11 @@ use App\Helpers\RateLimitHelper;
 use App\Repositories\ArticleRepository;
 use App\Repositories\UserPreferenceRepository;
 use App\Repositories\UserRepository;
+use App\Services\ArticleAggregationService;
 use App\Services\ArticleService;
 use App\Services\AuthService;
+use App\Services\GuardianApiService;
+use App\Services\NewsApiService;
 use App\Services\UserPreferenceService;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
@@ -33,6 +37,13 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(ArticleServiceInterface::class, ArticleService::class);
         $this->app->bind(UserPreferenceServiceInterface::class, UserPreferenceService::class);
         $this->app->bind(UserPreferenceRepositoryInterface::class, UserPreferenceRepository::class);
+        $this->app->singleton(NewsApiService::class, function ($app) {
+            return new NewsApiService;
+        });
+
+        $this->app->singleton(GuardianApiService::class, function ($app) {
+            return new GuardianApiService;
+        });
     }
 
     /**

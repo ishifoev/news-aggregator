@@ -4,7 +4,10 @@ namespace App\Repositories;
 
 use App\Contracts\ArticleRepositoryInterface;
 use App\Models\Article;
+use App\Models\Source;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class ArticleRepository implements ArticleRepositoryInterface
 {
@@ -28,6 +31,32 @@ class ArticleRepository implements ArticleRepositoryInterface
             })
             ->orderBy('published_at', 'desc')
             ->paginate(10);
+    }
+
+    public function saveArticlesWithSources(array $articles): void
+    {
+        DB::transaction(function () use ($articles) {
+            foreach ($articles as $articleData) {
+                $source = Source::updateOrCreate(
+                    ['name' => $articleData['source']],
+                    ['metadata' => json_encode(['category' => $articleData['category']])]
+                );
+
+                Article::updateOrCreate(
+                    ['title' => $articleData['title']],
+                    [
+                        'content' => $articleData['content'],
+                        'author' => $articleData['author'],
+                        'published_at' => $articleData['published_at'],
+                        'source_id' => $source->id,
+                        'category' => $articleData['category'],
+                        'url' => $articleData['url'],
+                    ]
+                );
+            }
+        });
+
+        Log::info('Articles and sources saved successfully', ['count' => count($articles)]);
     }
 
     public function findArticleById(int $id): Article

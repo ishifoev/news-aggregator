@@ -2,8 +2,8 @@
 
 namespace App\Services;
 
-use App\Contracts\UserPreferenceServiceInterface;
 use App\Contracts\UserPreferenceRepositoryInterface;
+use App\Contracts\UserPreferenceServiceInterface;
 use App\Models\UserPreference;
 use Exception;
 use Illuminate\Support\Facades\Cache;
@@ -22,6 +22,7 @@ class UserPreferenceService implements UserPreferenceServiceInterface
     {
         try {
             Log::info("Setting user preferences for user ID: {$userId}", $preferences);
+
             return Cache::remember("user_preferences_{$userId}", 300, function () use ($userId, $preferences) {
                 return $this->userPreferenceRepository->setUserPreferences($userId, $preferences);
             });
@@ -35,6 +36,7 @@ class UserPreferenceService implements UserPreferenceServiceInterface
     {
         try {
             Log::info("Fetching user preferences for user ID: {$userId}");
+
             return Cache::remember("user_preferences_{$userId}", 300, function () use ($userId) {
                 return $this->userPreferenceRepository->getUserPreferences($userId);
             });

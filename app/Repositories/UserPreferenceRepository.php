@@ -22,7 +22,8 @@ class UserPreferenceRepository implements UserPreferenceRepositoryInterface
         });
     }
 
-    public function getUserPreferences(int $userId): ?UserPreference {
+    public function getUserPreferences(int $userId): ?UserPreference
+    {
         return UserPreference::select('user_id', 'preferred_sources', 'preferred_categories', 'preferred_authors')
             ->where('user_id', $userId)
             ->first();

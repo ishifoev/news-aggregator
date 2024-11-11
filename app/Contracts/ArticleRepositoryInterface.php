@@ -10,4 +10,6 @@ interface ArticleRepositoryInterface
     public function getArticles(array $filters): LengthAwarePaginator;
 
     public function findArticleById(int $id): Article;
+
+    public function saveArticlesWithSources(array $articles): void;
 }

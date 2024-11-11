@@ -24,7 +24,16 @@ return [
     'postmark' => [
         'token' => env('POSTMARK_TOKEN'),
     ],
-
+    'news_sources' => [
+        'newsapi' => [
+            'api_url' => env('NEWS_API_URL'),
+            'api_key' => env('NEWS_API_KEY'),
+        ],
+        'guardian' => [
+            'api_url' => env('GUARDIAN_API_URL'),
+            'api_key' => env('GUARDIAN_API_KEY'),
+        ],
+    ],
     'ses' => [
         'key' => env('AWS_ACCESS_KEY_ID'),
         'secret' => env('AWS_SECRET_ACCESS_KEY'),
