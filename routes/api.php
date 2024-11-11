@@ -3,6 +3,7 @@
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HealthCheckController;
+use App\Http\Controllers\UserPreferenceController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -29,5 +30,9 @@ Route::prefix('v1')->group(function () {
     });
     Route::middleware(['auth:sanctum'])->group(function () {
         Route::post('/logout', [AuthController::class, 'logout']);
+        Route::middleware(['throttle:user-preferences'])->group(function () {
+            Route::post('/user/preferences', [UserPreferenceController::class, 'setPreferences']);
+            Route::get('/user/preferences', [UserPreferenceController::class, 'getPreferences']);
+        });
     });
 });
