@@ -25,6 +25,13 @@ class AuthService implements AuthServiceInterface {
         $this->userRepository = $userRepository;
     }
 
+    /**
+     * Authenticates a user and returns an access token upon successful login.
+     *
+     * @param array $credentials User login credentials.
+     * @return string The generated access token.
+     * @throws ValidationException If authentication fails.
+     */
     public function login(array $credentials): string {
         Log::info('Login attempt', ['email' => $credentials['email']]);
 
@@ -45,7 +52,11 @@ class AuthService implements AuthServiceInterface {
     }
 
     /**
-     * @throws \Exception
+     * Registers a new user and generates an access token.
+     *
+     * @param array $data User registration data.
+     * @return string The generated access token.
+     * @throws \Exception If user registration fails.
      */
     public function register(array $data): string {
         Log::info('Registration attempt', ['email' => $data['email']]);
@@ -62,6 +73,8 @@ class AuthService implements AuthServiceInterface {
     }
 
     /**
+     * Logs out the currently authenticated user and deletes all tokens.
+     *
      * @return void
      */
     public function logout(): void
@@ -77,6 +90,13 @@ class AuthService implements AuthServiceInterface {
         }
     }
 
+    /**
+     * Sends a password reset link to the provided email address.
+     *
+     * @param string $email The email address for the password reset link.
+     * @return void
+     * @throws \Exception If sending the password reset link fails.
+     */
     public function sendPasswordResetLink(string $email): void {
         Log::info('Password reset link request initiated', ['email' => $email]);
         try {
