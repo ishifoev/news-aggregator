@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('articles', function (Blueprint $table) {
             $table->id();
-            $table->string('title');
-            $table->text('content');
+            $table->string('title')->unique()->index();
+            $table->longText('content');
             $table->string('author')->nullable();
             $table->foreignId('source_id')->constrained('sources')->onDelete('cascade');
             $table->string('category')->nullable();

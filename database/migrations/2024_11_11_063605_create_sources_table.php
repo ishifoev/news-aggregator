@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('sources', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->unique();
+            $table->string('name')->unique()->index();
             $table->string('api_url')->nullable(); // API URL for fetching articles
             $table->string('api_key')->nullable(); // API key if required
             $table->json('metadata')->nullable(); // Any additional data in JSON format

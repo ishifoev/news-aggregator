@@ -33,6 +33,7 @@ class GuardianApiService implements ArticleFetcherInterface
 
     private function processArticles(array $articles): array
     {
+        dump("guardian_api");
         return array_map(function ($article) {
             return [
                 'title' => htmlspecialchars($article['webTitle'] ?? 'Untitled'),

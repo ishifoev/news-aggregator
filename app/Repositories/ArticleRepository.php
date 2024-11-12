@@ -35,29 +35,73 @@ class ArticleRepository implements ArticleRepositoryInterface
 
     public function saveArticlesWithSources(array $articles): void
     {
-        DB::transaction(function () use ($articles) {
-            foreach ($articles as $articleData) {
-                $source = Source::updateOrCreate(
-                    ['name' => $articleData['source']],
-                    ['metadata' => json_encode(['category' => $articleData['category']])]
-                );
+        $chunkSize = 1000; // Adjust based on your memory and performance needs
 
-                Article::updateOrCreate(
-                    ['title' => $articleData['title']],
-                    [
+        DB::transaction(function () use ($articles, $chunkSize) {
+            Log::info('Starting bulk upsert operation', ['total_articles' => count($articles)]);
+
+            foreach (array_chunk($articles, $chunkSize) as $index => $articleChunk) {
+                Log::info("Processing chunk {$index}", ['chunk_size' => count($articleChunk)]);
+
+                $sources = [];
+                $sourceMap = []; // Map for storing source IDs
+                $articlesToInsert = [];
+
+                foreach ($articleChunk as $articleData) {
+                    $sourceName = $articleData['source'];
+
+                    // Check if the source has already been processed in this chunk
+                    if (!isset($sourceMap[$sourceName])) {
+                        $source = Source::updateOrCreate(
+                            ['name' => $sourceName],
+                            [
+                                'api_url' => $articleData['url'],
+                                'metadata' => json_encode(['category' => $articleData['category']]),
+                                'updated_at' => now()
+                            ]
+                        );
+
+                        $sourceMap[$sourceName] = $source->id;
+                        $sources[] = [
+                            'name' => $sourceName,
+                            'api_url' => $articleData['url'],
+                            'metadata' => json_encode(['category' => $articleData['category']]),
+                            'created_at' => now(),
+                            'updated_at' => now()
+                        ];
+                    }
+
+                    $articlesToInsert[] = [
+                        'title' => $articleData['title'],
                         'content' => $articleData['content'],
                         'author' => $articleData['author'],
                         'published_at' => $articleData['published_at'],
-                        'source_id' => $source->id,
+                        'source_id' => $sourceMap[$sourceName], // Use the source ID from the map
                         'category' => $articleData['category'],
-                        'url' => $articleData['url'],
-                    ]
-                );
-            }
-        });
+                        'created_at' => now(),
+                        'updated_at' => now()
+                    ];
+                }
 
-        Log::info('Articles and sources saved successfully', ['count' => count($articles)]);
+                if (!empty($sources)) {
+                    Log::info('Upserting sources', ['chunk_index' => $index]);
+                    Source::upsert($sources, ['name'], ['api_url', 'metadata', 'updated_at']);
+                }
+
+                // Perform bulk upserts for articles
+                Log::info('Upserting articles', ['chunk_index' => $index]);
+                if (!empty($articlesToInsert)) {
+                    Article::upsert($articlesToInsert, ['title'], ['content', 'author', 'published_at', 'source_id', 'category', 'updated_at']);
+                    Log::info("Chunk {$index} processed successfully");
+                }
+
+            }
+
+            Log::info('Bulk upsert operation completed');
+        });
     }
+
+
 
     public function findArticleById(int $id): Article
     {
